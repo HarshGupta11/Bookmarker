@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	// Listening for form submit event
+	fetchData();
 	$("#myForm").submit( saveBookmark);
 });
 
@@ -27,22 +28,54 @@ function saveBookmark(event){
 	// Set to localstorage
 	localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 
+	// Updating HTML Form
+	$(this)[0].reset();
+	fetchData();
 	// Prevent form from submitting
 	event.preventDefault();	
 }
 
+function removeBookmark(siteName){
+	var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+	// Removing the data from bookmarks
+	delete bookmarks[siteName];
+	// Updating local storage back
+	localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+	// Updating the HTML content to display
+	fetchData();
+}
+function fetchData(){
+	var content = '';
+	var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+	// Forming the content to display
+	for (key in bookmarks){
+		content+= '<div class = "well">'+
+				  '<h1>'+key+
+				  '<a href = "'+bookmarks[key]+'" class = "btn btn-default" target = "_blank" >Visit</a>'+
+				  '<a href="#" class = "btn btn-danger" onclick = "removeBookmark(\''+key+'\')">Delete</a>'+
+				  '</h1>'+
+				  '</div>';
+	}
+	// Displaying the content in html
+	$('#BookmarksResults').html(content);
+}
 function validateForm(siteName, siteURL){
 	var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
-	if (bookmarks === null) return true;
-	else if (siteName in bookmarks){
+	var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    var regex = new RegExp(expression);
+	
+	// Checking if bookmark already exists
+	if (siteName in bookmarks){
 		alert("Bookmark already exists with this site name");
 		return false;
 	}
+	// Checking if any field is empty
 	else if( !siteName || !siteURL){
 		alert("Please fill all the fields");
 		return false;
 	}
-	else if(!siteURL.match('(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})')){
+	// Checking that entered url is valid or not
+	else if(!siteURL.match(regex)){
 		alert("Please enter valid enter URL");
 		return false;
 	}
