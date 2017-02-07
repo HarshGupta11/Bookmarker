@@ -11,6 +11,22 @@ function saveBookmark(event){
 	// Performing form validations
 	if(!validateForm(siteName, siteURL)) return false;
 
+	// Updating local storage for bookmarks
+	var bookmarks = localStorage.getItem('bookmarks')
+	// Test if bookmarks is empty
+	if (bookmarks === null){
+		// Init array
+		bookmarks = {};
+	}
+	else{
+		// Get bookmarks from localstorage
+		bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+	}
+	// Add bookmark to array
+	bookmarks[siteName] = siteURL;
+	// Set to localstorage
+	localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
 	// Prevent form from submitting
 	event.preventDefault();	
 }
