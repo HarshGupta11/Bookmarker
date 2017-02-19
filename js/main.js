@@ -63,20 +63,20 @@ function validateForm(siteName, siteURL){
 	var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
 	var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
     var regex = new RegExp(expression);
-	
-	// Checking if bookmark already exists
-	if (siteName in bookmarks){
-		alert("Bookmark already exists with this site name");
-		return false;
-	}
+
 	// Checking if any field is empty
-	else if( !siteName || !siteURL){
+	if( !siteName || !siteURL){
 		alert("Please fill all the fields");
 		return false;
 	}
 	// Checking that entered url is valid or not
 	else if(!siteURL.match(regex)){
 		alert("Please enter valid enter URL");
+		return false;
+	}
+	// Checking if bookmark already exists
+	else if (bookmarks != null && siteName in bookmarks){
+		alert("Bookmark already exists with this site name");
 		return false;
 	}
 	return true;
